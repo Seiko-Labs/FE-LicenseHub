@@ -12,7 +12,7 @@ export interface Package {
   expiration_date: string;
   flag: boolean;
   client: ID;
-  licenses: number[]
+  licenses: number[];
 }
 
 export interface CreatePackageRequest {
@@ -30,8 +30,7 @@ interface DeletePackageRequest {
   id: ID;
 }
 
-const fetchPackages = async (token: string) =>
-  get(token, "clientpackages/");
+const fetchPackages = async (token: string) => get(token, "clientpackages/");
 const createPackage = async (
   token: string,
   { arg }: FetchRequest<CreatePackageRequest>,
@@ -47,7 +46,7 @@ export const deletePackage = async (
   { arg: { id } }: FetchRequest<DeletePackageRequest>,
 ) => del(token, `clientpackages/${id}/`);
 export const usePackages = () =>
-  useSWR<Package[]>("packages", () => access(fetchPackages))
+  useSWR<Package[]>("packages", () => access(fetchPackages));
 export const useCreatePackage = () =>
   useSWRMutation<Package, FetchError, string, CreatePackageRequest>(
     "packages",

@@ -33,8 +33,7 @@ interface DeleteLicenseRequest {
   id: ID;
 }
 
-const fetchLicenses = async (token: string) =>
-  get(token, "licenses/");
+const fetchLicenses = async (token: string) => get(token, "licenses/");
 const createLicense = async (
   token: string,
   { arg }: FetchRequest<CreateLicenseRequest>,
@@ -50,7 +49,7 @@ export const deleteLicense = async (
   { arg: { id } }: FetchRequest<DeleteLicenseRequest>,
 ) => del(token, `licenses/${id}/`);
 export const useLicenses = () =>
-  useSWR<License[]>("licenses", () => access(fetchLicenses))
+  useSWR<License[]>("licenses", () => access(fetchLicenses));
 export const useCreateLicense = () =>
   useSWRMutation<License, FetchError, string, CreateLicenseRequest>(
     "licenses",
@@ -71,14 +70,14 @@ interface GenerateKeyRequest {
   package_id: ID;
 }
 
-export const generateKey = async (token: string, { arg }: FetchRequest<GenerateKeyRequest>) => {
+export const generateKey = async (
+  token: string,
+  { arg }: FetchRequest<GenerateKeyRequest>,
+) => {
   return post<GenerateKeyRequest>(token, "generate_key/", arg);
-}
+};
 export const useGenerateKey = () =>
   useSWRMutation<unknown, FetchError, string, GenerateKeyRequest>(
     "generate",
     (_, arg) => access(generateKey, arg),
   );
-
-
-

@@ -16,24 +16,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChangeEvent, FC, PropsWithChildren, useState } from "react";
+import { ChangeEvent, FC, PropsWithChildren } from "react";
 import { Input } from "./ui/input";
 import { Controller, useForm } from "react-hook-form";
-import { CreateLicenseRequest, License, LicenseType, useCreateLicense, useDeleteLicense, useEditLicense, useGenerateKey, useLicenses } from "@/service/licenses";
+import {
+  CreateLicenseRequest,
+  License,
+  LicenseType,
+  useCreateLicense,
+  useDeleteLicense,
+  useEditLicense,
+  useGenerateKey,
+  useLicenses,
+} from "@/service/licenses";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Calendar } from "./ui/calendar";
 import { Badge } from "./ui/badge";
 import { ID } from "@/types";
 import { toast } from "sonner";
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 interface CreateLicenseFormProps {
   defaultValues?: CreateLicenseRequestForm;
   onSubmit: (data: CreateLicenseRequestForm) => void;
 }
 
-
-interface CreateLicenseRequestForm extends Omit<CreateLicenseRequest, "client_package" | "expiration_date"> {
+interface CreateLicenseRequestForm
+  extends Omit<CreateLicenseRequest, "client_package" | "expiration_date"> {
   expiration_date: Date;
 }
 
@@ -51,30 +60,30 @@ const CreateLicenseForm: FC<CreateLicenseFormProps> = ({
     <form
       onSubmit={(e) => {
         handleSubmit(onSubmit)(e);
-
       }}
       className="space-y-4"
     >
-
       <Controller
         control={form.control}
         name="quantity"
         render={({ field: { value, onChange } }) => {
-          return <Input
-            placeholder="Quantity"
-            value={value}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              if (e.target.value === '') {
-                onChange('')
-                return;
-              }
-              const v = parseInt(e.target.value);
-              if (isNaN(v)) return;
-              if (v < 0) return;
+          return (
+            <Input
+              placeholder="Quantity"
+              value={value}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                if (e.target.value === "") {
+                  onChange("");
+                  return;
+                }
+                const v = parseInt(e.target.value);
+                if (isNaN(v)) return;
+                if (v < 0) return;
 
-              onChange(v)
-            }}
-          />
+                onChange(v);
+              }}
+            />
+          );
         }}
       />
 
@@ -83,19 +92,22 @@ const CreateLicenseForm: FC<CreateLicenseFormProps> = ({
         name="type"
         defaultValue={LicenseType.ATTENDED}
         render={({ field: { value, onChange } }) => {
-          return <RadioGroup
-            value={value}
-            onValueChange={onChange}
-            defaultValue={LicenseType.ATTENDED}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value={LicenseType.ATTENDED} id="r1" />
-              <label htmlFor="r1">Attended</label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value={LicenseType.UNATTENDED} id="r2" />
-              <label htmlFor="r2">Unattended</label>
-            </div>
-          </RadioGroup>
+          return (
+            <RadioGroup
+              value={value}
+              onValueChange={onChange}
+              defaultValue={LicenseType.ATTENDED}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value={LicenseType.ATTENDED} id="r1" />
+                <label htmlFor="r1">Attended</label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value={LicenseType.UNATTENDED} id="r2" />
+                <label htmlFor="r2">Unattended</label>
+              </div>
+            </RadioGroup>
+          );
         }}
       />
 
@@ -136,14 +148,13 @@ interface LicensesProps {
   id: number;
 }
 
-
 export const Licenses: FC<LicensesProps> = ({ id }) => {
   const { data } = useLicenses();
 
-  const { trigger: create } = useCreateLicense()
-  const { trigger: edit } = useEditLicense()
-  const { trigger: remove } = useDeleteLicense()
-  const { trigger: generateKey } = useGenerateKey()
+  const { trigger: create } = useCreateLicense();
+  const { trigger: edit } = useEditLicense();
+  const { trigger: remove } = useDeleteLicense();
+  const { trigger: generateKey } = useGenerateKey();
 
   const sortById = (a: License, b: License) => a.id - b.id;
 
@@ -152,14 +163,14 @@ export const Licenses: FC<LicensesProps> = ({ id }) => {
   const handleCreate = async (data: CreateLicenseRequestForm) => {
     const iso = data.expiration_date.toISOString().slice(0, 10);
 
-    await create({ ...data, client_package: id, expiration_date: iso })
+    await create({ ...data, client_package: id, expiration_date: iso });
   };
 
   const handleEdit = async (data: CreateLicenseRequestForm & { id: ID }) => {
     const iso = data.expiration_date.toISOString().slice(0, 10);
 
-    await edit({ ...data, client_package: id, expiration_date: iso })
-  }
+    await edit({ ...data, client_package: id, expiration_date: iso });
+  };
 
   const locale = navigator.language ?? "en-US";
 
@@ -167,19 +178,21 @@ export const Licenses: FC<LicensesProps> = ({ id }) => {
     const date = new Date(strDate);
 
     return new Intl.DateTimeFormat(locale).format(date);
-  }
-
+  };
 
   return (
     <div className="relative h-full w-full max-w-xl">
-      <Card className="xl:col-span-2 w-full max-w-xl max-h-[calc(100% - 5rem)] relative h-full overflow-auto"
-        style={{ height: 'calc(100% - 6rem)' }}
+      <Card
+        className="xl:col-span-2 w-full max-w-xl max-h-[calc(100% - 5rem)] relative h-full overflow-auto"
+        style={{ height: "calc(100% - 6rem)" }}
       >
         <CardHeader className="flex flex-row items-center">
           <div className="grid gap-2">
             <CardTitle>Licenses</CardTitle>
             <CardDescription>
-              <span className="text-muted-foreground">Manage your licenses</span>
+              <span className="text-muted-foreground">
+                Manage your licenses
+              </span>
             </CardDescription>
           </div>
           <div className="ml-auto flex gap-2">
@@ -199,50 +212,50 @@ export const Licenses: FC<LicensesProps> = ({ id }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {licenses.map(({ id, quantity, type, created_at, expiration_date }) => (
-                <TableRow key={id}>
-                  <TableCell>
-                    <div className="font-medium uppercase">{type}</div>
-                    <div className="text-sm text-muted-foreground flex flex-wrap gap-2">
-                      <Badge>
-                        Active from {fmt(created_at)} to {fmt(expiration_date)}
-                      </Badge>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {quantity}
-                  </TableCell>
-                  <TableCell className="text-right flex items-center gap-2 justify-end">
-                    <CreateLicensePopover
-                      onSubmit={(data) => {
-                        handleEdit({ ...data, id })
-                      }}
-                      defaultValues={
-                        {
+              {licenses.map(
+                ({ id, quantity, type, created_at, expiration_date }) => (
+                  <TableRow key={id}>
+                    <TableCell>
+                      <div className="font-medium uppercase">{type}</div>
+                      <div className="text-sm text-muted-foreground flex flex-wrap gap-2">
+                        <Badge>
+                          Active from {fmt(created_at)} to{" "}
+                          {fmt(expiration_date)}
+                        </Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell>{quantity}</TableCell>
+                    <TableCell className="text-right flex items-center gap-2 justify-end">
+                      <CreateLicensePopover
+                        onSubmit={(data) => {
+                          handleEdit({ ...data, id });
+                        }}
+                        defaultValues={{
                           quantity,
                           type,
-                          expiration_date: new Date(expiration_date)
-                        }
-                      }
-                    >
-                      <Button variant="outline" size="icon">
-                        <EditIcon className="size-4" />
+                          expiration_date: new Date(expiration_date),
+                        }}
+                      >
+                        <Button variant="outline" size="icon">
+                          <EditIcon className="size-4" />
+                        </Button>
+                      </CreateLicensePopover>
+                      <Button
+                        onClick={() => {
+                          remove({ id });
+                        }}
+                        variant="destructive"
+                        size="icon"
+                      >
+                        <TrashIcon className="size-4" />
                       </Button>
-                    </CreateLicensePopover>
-                    <Button
-                      onClick={() => { remove({ id }) }}
-                      variant="destructive"
-                      size="icon"
-                    >
-                      <TrashIcon className="size-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                  </TableRow>
+                ),
+              )}
             </TableBody>
           </Table>
         </CardContent>
-
       </Card>
 
       <CardFooter className="mt-auto w-full border-muted border h-20 shrink-0 bg-black rounded-md absolute bottom-0">
@@ -251,15 +264,17 @@ export const Licenses: FC<LicensesProps> = ({ id }) => {
             const target = e.target as HTMLButtonElement;
             target.disabled = true;
             generateKey({ package_id: id }).then(() => {
-              toast.success('Key generated successfully ')
-            })
+              toast.success("Key generated successfully ");
+            });
 
             setTimeout(() => {
               target.disabled = false;
-            }, 1000)
+            }, 1000);
           }}
-        >Generate key</Button>
+        >
+          Generate key
+        </Button>
       </CardFooter>
-    </div >
+    </div>
   );
-}
+};

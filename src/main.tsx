@@ -9,7 +9,6 @@ import { Licenses } from "./components/licenses";
 import { Toaster } from "sonner";
 import { SignInDialog } from "./sign-in-dialog";
 
-
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <SWRConfig

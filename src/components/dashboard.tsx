@@ -28,7 +28,7 @@ import {
 import { FC, PropsWithChildren } from "react";
 import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
-import { PopoverClose, PopoverTrigger } from "@radix-ui/react-popover";
+import { PopoverTrigger } from "@radix-ui/react-popover";
 import { Popover, PopoverContent } from "./ui/popover";
 import { ID } from "@/types";
 
@@ -95,7 +95,7 @@ export function Dashboard() {
   const { companies, edit, create, remove } = useCompaniesAPI();
 
   const handleCreate = async (data: CreateCompanyRequest) => {
-    await create(data)
+    await create(data);
   };
 
   const handleEdit = async (data: CreateCompanyRequest & { id: ID }) => {
