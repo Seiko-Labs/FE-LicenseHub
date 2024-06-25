@@ -50,8 +50,8 @@ export const App = () => {
               key={location.pathname}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
               className="xl:col-span-2 border-0 pb-14  w-full max-w-2xl h-full overflow-auto"
             >
               {cloneElement(element, { key: location.pathname })}

@@ -138,7 +138,12 @@ export const Licenses: FC = () => {
   if (!id) return null;
   const sortById = (a: License, b: License) => a.id - b.id;
 
-  const licenses = data ? data.sort(sortById).reverse() : [];
+  const licenses = data
+    ? data
+        .sort(sortById)
+        .reverse()
+        .filter((license) => license.client_package === Number(id))
+    : [];
 
   const handleCreate = async (data: CreateLicenseRequestForm) => {
     await create({ ...data, client_package: Number(id) });
