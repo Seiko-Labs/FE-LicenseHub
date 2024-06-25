@@ -13,16 +13,17 @@ export interface Package {
   flag: boolean;
   client: ID;
   licenses: number[];
+  name: string;
 }
 
 export interface CreatePackageRequest {
   hardware_id: string;
-  expiration_date: string;
+  name: string;
   flag: boolean;
   client: ID;
 }
 
-interface EditPackageRequest extends CreatePackageRequest {
+export interface EditPackageRequest extends CreatePackageRequest {
   id: ID;
 }
 

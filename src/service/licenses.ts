@@ -14,6 +14,7 @@ export interface License {
   type: LicenseType;
   quantity: number;
   expiration_date: string;
+  activation_date: string;
   created_at: string;
   client_package: ID;
 }
@@ -21,11 +22,12 @@ export interface License {
 export interface CreateLicenseRequest {
   type: LicenseType;
   quantity: number;
+  activation_date: string;
   expiration_date: string;
   client_package: ID;
 }
 
-interface EditLicenseRequest extends CreateLicenseRequest {
+export interface EditLicenseRequest extends CreateLicenseRequest {
   id: ID;
 }
 
@@ -78,6 +80,6 @@ export const generateKey = async (
 };
 export const useGenerateKey = () =>
   useSWRMutation<unknown, FetchError, string, GenerateKeyRequest>(
-    "generate",
+    "clientpackages",
     (_, arg) => access(generateKey, arg),
   );

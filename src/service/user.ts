@@ -3,7 +3,7 @@ import { Credentials, FetchError, FetchRequest } from "@/types";
 import { f } from "@/util";
 import useSWRMutation from "swr/mutation";
 
-interface UseTokenResponse {
+export interface UseTokenResponse {
   access: string;
   refresh: string;
 }
@@ -22,6 +22,10 @@ export const getSavedToken = () => {
 
 export const saveToken = (data: UseTokenResponse) => {
   localStorage.setItem("token", JSON.stringify(data));
+};
+
+export const destroyToken = () => {
+  localStorage.removeItem("token");
 };
 
 export const fetchToken = async ({ arg }: FetchRequest<Credentials>) => {

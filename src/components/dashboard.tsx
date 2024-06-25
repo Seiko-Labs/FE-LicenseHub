@@ -1,36 +1,30 @@
-import { ChevronRight, EditIcon, PlusIcon, TrashIcon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronRight,
+  EditIcon,
+  PlusIcon,
+  TrashIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "./ui/badge";
-import { Link } from "wouter";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Company,
   CreateCompanyRequest,
-  useCompanies,
-  useCreateCompany,
-  useDeleteCompany,
-  useEditCompany,
+  EditCompanyRequest,
 } from "@/service/companies";
 import { FC, PropsWithChildren } from "react";
 import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
-import { PopoverTrigger } from "@radix-ui/react-popover";
+import { PopoverClose, PopoverTrigger } from "@radix-ui/react-popover";
 import { Popover, PopoverContent } from "./ui/popover";
 import { ID } from "@/types";
+import { Link } from "react-router-dom";
+import {
+  useCreateResource,
+  useEditResource,
+  useRemoveResource,
+  useResources,
+} from "@/hooks/use-resource";
 
 interface CreateCompanyFormProps {
   defaultValues?: CreateCompanyRequest;
@@ -52,7 +46,7 @@ const CreateCompanyForm: FC<CreateCompanyFormProps> = ({
       onSubmit={(e) => {
         handleSubmit(onSubmit)(e);
       }}
-      className="space-y-4"
+      className="flex gap-2"
     >
       <Input
         placeholder="Company Name"
@@ -60,10 +54,56 @@ const CreateCompanyForm: FC<CreateCompanyFormProps> = ({
         {...register("name")}
       />
 
-      <Button>Confirm</Button>
+      <Button
+        asChild
+        className="rounded-2xl shrink-0 gap-2 bg-muted/40 text-white/40 hover:text-white"
+        variant="secondary"
+      >
+        <PopoverClose type="submit">
+          <CheckIcon className="size-4" />
+        </PopoverClose>
+      </Button>
     </form>
   );
 };
+
+interface ConfirmationDialogProps {
+  onConfirm: () => void;
+  message?: string;
+}
+
+export const ConfirmationDialog: FC<
+  PropsWithChildren<ConfirmationDialogProps>
+> = ({ message, children, onConfirm }) => (
+  <Popover>
+    <PopoverTrigger asChild>{children}</PopoverTrigger>
+    <PopoverContent className="max-w-72 space-y-2">
+      <div>
+        <h1 className="font-light text-sm">Confirm the action</h1>
+        <h2>{message}</h2>
+      </div>
+
+      <div className=" space-x-2">
+        <Button
+          className="rounded-full text-red-400 border border-red-400"
+          variant="secondary"
+          onClick={() => {
+            onConfirm();
+          }}
+        >
+          <PopoverClose>Confirm</PopoverClose>
+        </Button>
+        <Button
+          className="rounded-full text-white/80"
+          variant="secondary"
+          autoFocus
+        >
+          <PopoverClose>Cancel</PopoverClose>
+        </Button>
+      </div>
+    </PopoverContent>
+  </Popover>
+);
 
 const CreateCompanyPopover: FC<PropsWithChildren<CreateCompanyFormProps>> = ({
   children,
@@ -77,22 +117,20 @@ const CreateCompanyPopover: FC<PropsWithChildren<CreateCompanyFormProps>> = ({
   </Popover>
 );
 
-const useCompaniesAPI = () => {
-  const { data } = useCompanies();
+export function Dashboard() {
+  const { data } = useResources<Company>("clientcompanies");
 
-  const { trigger: edit } = useEditCompany();
-  const { trigger: create } = useCreateCompany();
-  const { trigger: remove } = useDeleteCompany();
+  const { trigger: edit } = useEditResource<Company, EditCompanyRequest>(
+    "clientcompanies",
+  );
+  const { trigger: create } = useCreateResource<Company, CreateCompanyRequest>(
+    "clientcompanies",
+  );
+  const { trigger: remove } = useRemoveResource("clientcompanies");
 
   const sortById = (a: Company, b: Company) => a.id - b.id;
 
   const companies = data ? data.sort(sortById).reverse() : [];
-
-  return { companies, edit, create, remove };
-};
-
-export function Dashboard() {
-  const { companies, edit, create, remove } = useCompaniesAPI();
 
   const handleCreate = async (data: CreateCompanyRequest) => {
     await create(data);
@@ -102,17 +140,10 @@ export function Dashboard() {
     await edit(data);
   };
 
-  const handleDelete = async (id: ID) => {
-    await remove({ id });
-  };
-
   return (
-    <Card className="xl:col-span-2 w-full max-w-xl h-full overflow-auto">
+    <>
       <CardHeader className="flex flex-row items-center">
-        <div className="grid gap-2">
-          <CardTitle>Companies</CardTitle>
-          <CardDescription>Manage your companies and licenses</CardDescription>
-        </div>
+        <CardTitle className="text-4xl">Companies</CardTitle>
         <div className="ml-auto flex gap-2">
           <CreateCompanyPopover onSubmit={handleCreate}>
             <Button size="icon">
@@ -121,53 +152,56 @@ export function Dashboard() {
           </CreateCompanyPopover>
         </div>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Company</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {companies.map(({ id, name, partner }) => (
-              <TableRow key={id}>
-                <TableCell>
-                  <div className="font-medium">{name}</div>
-                  <div className="text-sm text-muted-foreground flex flex-wrap gap-2">
-                    Partner
-                    <Badge>{partner}</Badge>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right flex items-center gap-2 justify-end">
-                  <CreateCompanyPopover
-                    onSubmit={(data) => handleEdit({ id, ...data })}
-                    defaultValues={{ name }}
-                  >
-                    <Button variant="outline" size="icon">
-                      <EditIcon className="size-4" />
-                    </Button>
-                  </CreateCompanyPopover>
-                  <Button
-                    onClick={() => {
-                      handleDelete(id);
-                    }}
-                    variant="destructive"
-                    size="icon"
-                  >
-                    <TrashIcon className="size-4" />
-                  </Button>
+      <CardContent className="flex flex-col gap-4">
+        {companies.map(({ id, name }) => (
+          <div
+            key={id}
+            className="flex md:flex-row flex-col md:gap-2 gap-4 w-full md:rounded-full rounded-3xl md:items-center px-6 p-4 hover:bg-muted/20 bg-muted/10 border border-muted/20"
+          >
+            <p className="font-light tracking-widest text-nowrap overflow-hidden text-ellipsis capitalize">
+              {name}
+            </p>
+            <div className="ml-auto flex items-center gap-2 justify-end">
+              <CreateCompanyPopover
+                onSubmit={(data) => handleEdit({ id, ...data })}
+                defaultValues={{ name }}
+              >
+                <Button
+                  className="rounded-full"
+                  variant="secondary"
+                  size="icon"
+                >
+                  <EditIcon className="size-4 text-white/50" />
+                </Button>
+              </CreateCompanyPopover>
+              <ConfirmationDialog
+                onConfirm={() => {
+                  remove({ id });
+                }}
+                message={`Are you sure you want to remove ${name}?`}
+              >
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="rounded-full"
+                >
+                  <TrashIcon className="size-4 text-red-400" />
+                </Button>
+              </ConfirmationDialog>
 
-                  <Link href={`/${id}/p`}>
-                    <Button variant="outline" size="icon">
-                      <ChevronRight className="size-5" />
-                    </Button>
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+              <Link to={`/${id}/`}>
+                <Button
+                  variant="outline"
+                  className="rounded-full gap-2 text-white/50 font-light"
+                >
+                  View packages
+                  <ChevronRight className="size-5" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ))}
       </CardContent>
-    </Card>
+    </>
   );
 }
