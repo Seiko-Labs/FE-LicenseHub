@@ -125,7 +125,7 @@ const CreateLicensePopover: FC<PropsWithChildren<CreateLicenseFormProps>> = ({
 
 export const Licenses: FC = () => {
   const { data } = useResources<License>("licenses");
-  const { pkg: id } = useParams();
+  const { pkg: id, id: client } = useParams();
 
   const { trigger: create } = useCreateResource<License, CreateLicenseRequest>(
     "licenses",
@@ -161,7 +161,7 @@ export const Licenses: FC = () => {
       <CardHeader className="flex flex-row items-center">
         <div className="grid gap-2">
           <CardTitle className="text-4xl flex items-center justify-center gap-4">
-            <Link to={`/${id}`}>
+            <Link to={`/${client}`}>
               <Button variant="outline" size="icon" className="rounded-full">
                 <ChevronLeft />
               </Button>
