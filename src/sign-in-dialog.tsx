@@ -20,10 +20,8 @@ export const SignInDialog = () => {
   const tokenContext = useTokenContext();
 
   const { mutate: c } = useResources("clientcompanies");
-
   const { mutate: p } = useResources("clientpackages");
-
-  const { mutate: l } = useResources("clientlicenses");
+  const { mutate: l } = useResources("licenses");
 
   const form = useForm<Credentials>();
 

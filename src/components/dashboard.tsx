@@ -90,13 +90,14 @@ export const ConfirmationDialog: FC<
           onClick={() => {
             onConfirm();
           }}
+          asChild
         >
           <PopoverClose>Confirm</PopoverClose>
         </Button>
         <Button
           className="rounded-full text-white/80"
           variant="secondary"
-          autoFocus
+          asChild
         >
           <PopoverClose>Cancel</PopoverClose>
         </Button>

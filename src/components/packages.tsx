@@ -157,15 +157,18 @@ export const Packages: FC = () => {
   const { trigger: edit } = useEditResource<Package, EditPackageRequest>(
     "clientpackages",
   );
-  const { trigger: remove } = useRemoveResource(
-    `clientpackages?client_company_id=${id}`,
-  );
+  const { trigger: remove } = useRemoveResource(`clientpackages`);
 
   if (!id) return null;
 
   const sortById = (a: Package, b: Package) => a.id - b.id;
 
-  const packages = data ? data.sort(sortById).reverse() : [];
+  const packages = data
+    ? data
+        .sort(sortById)
+        .reverse()
+        .filter(({ client }) => client === Number(id))
+    : [];
 
   const locale = navigator.language ?? "en-US";
 
